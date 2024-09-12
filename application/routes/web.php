@@ -23,5 +23,5 @@ use App\Http\Controllers\Admin\NotificationController;
 */
 
 Route::get('/', function () {
-    return redirect('/admin');
+    return view('welcome');
 });
