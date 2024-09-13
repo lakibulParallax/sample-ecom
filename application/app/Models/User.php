@@ -10,12 +10,10 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable implements HasMedia
+class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, InteractsWithMedia;
+    use HasFactory, Notifiable, HasApiTokens;
 
     protected $fillable = [
         'name',
@@ -36,6 +34,7 @@ class User extends Authenticatable implements HasMedia
     ];
 
     protected $hidden = [
+        'password',
         'email_verified_at',
         'phone_verified_at',
         'temporary_token',

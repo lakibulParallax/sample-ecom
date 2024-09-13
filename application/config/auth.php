@@ -44,18 +44,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'admin-api' => [
-            'driver' => 'passport',
-            'provider' => 'admins',
-        ],
-        'user-api' => [
+        'api' => [
             'driver' => 'passport',
             'provider' => 'users',
-        ],
-        'tanker-api' => [
-            'driver' => 'passport',
-            'provider' => 'tankers',
-        ],
+        ]
     ],
 
     /*

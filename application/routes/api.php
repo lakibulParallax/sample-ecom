@@ -29,8 +29,10 @@ Route::prefix('user')->group(function () {
     Route::post('password-reset', [UserLoginController::class, 'changePassword']);
 
     // After Login and Email Verified
-    Route::middleware(['auth:user-api'])->group(function () {
+    Route::middleware(['auth:api'])->group(function () {
         /*Auth Apis*/
+        Route::post('logout', [UserLoginController::class, 'logout']);
+        //category
         Route::post('logout', [UserLoginController::class, 'logout']);
     });
 });

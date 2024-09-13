@@ -12,23 +12,10 @@ class Authenticate extends Middleware
      * @param  \Illuminate\Http\Request  $request
      * @return string|null
      */
-    protected function redirectTo($request): ?string
+    protected function redirectTo($request)
     {
-        if ($request->route()->getPrefix() == '/admin') {
-            return route('admin.login');
+        if (! $request->expectsJson()) {
+            return route('login');
         }
-        if ($request->route()->getPrefix() == 'api/user') {
-            return response()->json([
-                'message' => 'UnAuthenticated',
-                'data' => 'Invalid token or token expired.'
-            ], 401);
-        }
-        if ($request->route()->getPrefix() == 'api/tanker') {
-            return response()->json([
-                'message' => 'UnAuthenticated',
-                'data' => 'Invalid token or token expired.'
-            ], 401);
-        }
-        return route('admin.login');
     }
 }

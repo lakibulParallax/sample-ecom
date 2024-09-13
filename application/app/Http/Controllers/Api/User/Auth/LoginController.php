@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\User\Auth;
 
 use App\CentralLogics\Helpers;
+use App\Helper\ApiHelper;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\ApiResponseTrait;
@@ -10,6 +11,8 @@ use App\Traits\GeoCoderTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -22,61 +25,28 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|min:14|max:14'
+            'user_id'           => 'required',
+            'password'          => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
 
-        $user = User::where('phone', $request->phone)->first();
+        $fieldType = filter_var($request->user_id, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
 
-        if (!$user) {
-            $otp = rand(1000, 9999);
+        $user = User::where($fieldType, $request->user_id)->first();
 
-            $user = new User();
-            $user->phone = $request->phone;
-            $user->otp = $otp;
-            $user->is_active = 1;
-            $user->otp_expires_at = Carbon::now()->addDay();
-            $user->phone_verified_at = Carbon::now();
-            $user->save();
-
-            $data['message'] = 'New User Registered';
-            $data['otp'] = $otp;
-            return $this->successApiResponse($data);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
+        Auth::guard('api')->setUser($user);
+        $token = $user->createToken('UserLoginToken')->accessToken;
 
-        if($user->is_active == 0){
-            $message = "User is not active or Account has been suspended";
-            return response()->json(['message' => $message], 400);
-        }
-
-        if($user->otp && $user->otp_expires_at <= Carbon::now()){
-            if ($user->is_active) {
-                $otp = rand(1000, 9999);
-                $user->otp = $otp;
-                $user->otp_expires_at = Carbon::now()->addDay();
-                $user->save();
-
-                $data['message'] = 'OTP send successfully';
-                $data['otp'] = $otp;
-                return $this->successApiResponse($data);
-            } else {
-                $token = null;
-                $message = "User not active or Account has been suspended";
-                return response()->json(['token' => $token, 'message' => $message], 400);
-            }
-
-        } else {
-            $otp = rand(1000, 9999);
-            $user->otp = $otp;
-            $user->otp_expires_at = Carbon::now()->addDay();
-            $user->save();
-
-            $data['message'] = 'OTP send successfully';
-            $data['otp'] = $otp;
-            return $this->successApiResponse($data);
-        }
+        return response()->json([
+            'message' => 'Login successful',
+            'token'   => $token,
+            'user'    => $user,
+        ], 200);
     }
 
     public static function login_process_passport($user)
@@ -150,9 +120,10 @@ class LoginController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'nid' => 'required|numeric',
-            'phone' => 'required||min:14|max:14']);
-
+            'email' => 'required|email',
+            'phone' => 'required',
+            'password' => 'required|min:6',
+        ]);
 
         if ($validator->fails()) {
             $response['message'] = $validator->errors()->first();
@@ -172,9 +143,9 @@ class LoginController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
+            'password' => bcrypt($request->password),
             'is_active' => 1,
             'temporary_token' => $temporary_token,
-            'address' => json_encode($request->address)
         ]);
 
         if($user){
@@ -189,12 +160,6 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         if (Auth::user()) {
-
-            $user = User::where('id', Auth::id())->first();
-            $user->otp = null;
-            $user->otp_expires_at = null;
-            $user->save();
-
             Auth::user()->token()->revoke();
             $response['message'] = "Successfully Logged out";
             return response()->json($response, 200);
