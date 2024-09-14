@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\SubCategory;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
 
@@ -61,7 +62,7 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    public function show($id)
+    public function showCategory($id)
     {
         // Find the category by ID
         $category = Category::findOrFail($id);
@@ -72,7 +73,7 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    public function destroy($id)
+    public function destroyCategory($id)
     {
         // Find the category by ID
         $category = Category::findOrFail($id);
@@ -83,6 +84,104 @@ class CategoryController extends Controller
         // Return success response
         return response()->json([
             'message' => 'Category deleted successfully',
+        ], 200);
+    }
+
+    public function subCategoryList()
+    {
+        $sub_categories = SubCategory::with('category')->where('status',1)->get();
+        $response = [
+            'data' => $sub_categories
+        ];
+        return $this->successApiResponse($response);
+    }
+
+    public function storeSubCategory(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'category_id' => 'required|integer',
+            'name' => 'required|string|max:255|unique:categories,name',
+        ]);
+
+        $existCategory = Category::find($request->category_id);
+        if($existCategory){
+            // Create the category
+            $sub_category = SubCategory::create([
+                'category_id' => $request->category_id,
+                'name' => $request->name,
+            ]);
+
+            // Return success response
+            return response()->json([
+                'message' => 'Sub Category created successfully',
+                'sub category' => $sub_category,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Invalid category'
+            ], 404);
+        }
+    }
+
+    public function updateSubCategory(Request $request, $id)
+    {
+        // Validate the request data
+        $request->validate([
+            'category_id' => 'required|integer',
+            'name' => 'required|string|max:255|unique:categories,name,' . $id,
+        ]);
+
+        // Find the category by ID
+        $existCategory = Category::find($request->category_id);
+        if($existCategory) {
+            $sub_category = SubCategory::find($id);
+            if($sub_category){
+                // Update the category
+                $sub_category->update([
+                    'category_id' => $request->category_id,
+                    'name' => $request->name,
+                ]);
+
+                // Return success response
+                return response()->json([
+                    'message' => 'Sub Category updated successfully',
+                    'sub category' => $sub_category,
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Invalid sub category'
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Invalid category'
+            ], 404);
+        }
+    }
+
+    public function showSubCategory($id)
+    {
+        // Find the category by ID
+        $sub_category = SubCategory::with('category')->findOrFail($id);
+
+        // Return success response with the category data
+        return response()->json([
+            'sub_category' => $sub_category,
+        ], 200);
+    }
+
+    public function destroySubCategory($id)
+    {
+        // Find the category by ID
+        $sub_category = SubCategory::findOrFail($id);
+
+        // Delete the category
+        $sub_category->delete();
+
+        // Return success response
+        return response()->json([
+            'message' => 'Sub Category deleted successfully',
         ], 200);
     }
 
