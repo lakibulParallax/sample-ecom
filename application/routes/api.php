@@ -3,13 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\User\UserController;
-use App\Http\Controllers\Api\User\OrderController;
-use App\Http\Controllers\Api\ApiController;
-use App\Http\Controllers\Api\Tanker\Auth\LoginController as TankerLoginController;
 use App\Http\Controllers\Api\User\Auth\LoginController as UserLoginController;
-use App\Http\Controllers\Api\Tanker\TankerController;
-use App\Http\Controllers\Api\Tanker\OrderController as TankerOrderController;
-use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\Product\ProductController;
+use App\Http\Controllers\Api\Product\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +29,10 @@ Route::prefix('user')->group(function () {
         /*Auth Apis*/
         Route::post('logout', [UserLoginController::class, 'logout']);
         //category
-        Route::post('logout', [UserLoginController::class, 'logout']);
+        Route::prefix('category')->group(function () {
+            Route::get('/', [CategoryController::class, 'categoryList']);
+            Route::post('/', [CategoryController::class, 'storeCategory']);
+            Route::put('/{id}', [CategoryController::class, 'updateCategory']);
+        });
     });
 });

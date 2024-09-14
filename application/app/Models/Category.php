@@ -4,18 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Road extends Model
+class Category extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name'];
 
     protected $hidden = [
         'created_at',
         'updated_at',
     ];
 
-    public function orders()
+    public function sub_categories(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(SubCategory::class, 'category_id', 'id');
     }
 }
