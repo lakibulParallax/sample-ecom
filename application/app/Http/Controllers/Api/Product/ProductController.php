@@ -17,7 +17,9 @@ class ProductController extends Controller
 
     public function list()
     {
-        $items = Product::with('fileManager')->where('status',1)->latest()->paginate(10);
+        $items = Product::with(['category', 'sub_category', 'brand', 'fileManager'])
+            ->where('status',1)
+            ->latest()->paginate(10);
         $response = [
             'data' => $items
         ];
@@ -135,7 +137,7 @@ class ProductController extends Controller
     public function show($id)
     {
         // Find the Product by ID
-        $item = Product::with('fileManager')->find($id);
+        $item = Product::with(['category', 'sub_category', 'brand', 'fileManager'])->find($id);
 
         if($item){
             return response()->json([
