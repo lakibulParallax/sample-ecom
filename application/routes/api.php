@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\User\Auth\LoginController as UserLoginController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\Product\CategoryController;
+use App\Http\Controllers\Api\Product\BrandController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,22 @@ Route::prefix('user')->group(function () {
             Route::put('/{id}', [CategoryController::class, 'updateSubCategory']);
             Route::get('/{id}', [CategoryController::class, 'showSubCategory']);
             Route::delete('/{id}', [CategoryController::class, 'destroySubCategory']);
+        });
+        //brand
+        Route::prefix('brand')->group(function () {
+            Route::get('/', [BrandController::class, 'list']);
+            Route::post('/', [BrandController::class, 'store']);
+            Route::put('/{id}', [BrandController::class, 'update']);
+            Route::get('/{id}', [BrandController::class, 'show']);
+            Route::delete('/{id}', [BrandController::class, 'destroy']);
+        });
+        //product
+        Route::prefix('product')->group(function () {
+            Route::get('/', [ProductController::class, 'list']);
+            Route::post('/', [ProductController::class, 'store']);
+            Route::put('/{id}', [ProductController::class, 'update']);
+            Route::get('/{id}', [ProductController::class, 'show']);
+            Route::delete('/{id}', [ProductController::class, 'destroy']);
         });
     });
 });

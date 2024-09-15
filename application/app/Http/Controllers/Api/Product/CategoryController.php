@@ -101,7 +101,7 @@ class CategoryController extends Controller
         // Validate the request data
         $request->validate([
             'category_id' => 'required|integer',
-            'name' => 'required|string|max:255|unique:categories,name',
+            'name' => 'required|string|max:255|unique:sub_categories,name',
         ]);
 
         $existCategory = Category::find($request->category_id);
@@ -129,7 +129,7 @@ class CategoryController extends Controller
         // Validate the request data
         $request->validate([
             'category_id' => 'required|integer',
-            'name' => 'required|string|max:255|unique:categories,name,' . $id,
+            'name' => 'required|string|max:255|unique:sub_categories,name,' . $id,
         ]);
 
         // Find the category by ID

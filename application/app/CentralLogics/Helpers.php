@@ -5,6 +5,7 @@ namespace App\CentralLogics;
 use App\Models\Block;
 use App\Models\District;
 use App\Models\PaymentTransaction;
+use App\Models\Product;
 use App\Models\Road;
 use App\Models\Tanker;
 use App\Models\TankerTransaction;
@@ -14,6 +15,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use mysql_xdevapi\Exception;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -90,6 +92,20 @@ class Helpers
         }
 
         return $imageName;
+    }
+
+    public static function generate_slug($name)
+    {
+        // Set the initial slug to the entered slug
+        $slug = Str::slug($name, '-');
+
+        // Check if the slug already exists in the products table
+        while (Product::where('slug', $slug)->exists()) {
+            // If the slug exists, append a random string to make it unique
+            $slug = Str::slug($name, '-') . '-' . Str::random(6);
+        }
+
+        return $slug;
     }
 
     public static function get_qrcode($data)

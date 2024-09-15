@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'storage_driver' => env('STORAGE_DRIVER', 'public'),
+
     'asset_url' => env('ASSET_URL', null),
 
     /*

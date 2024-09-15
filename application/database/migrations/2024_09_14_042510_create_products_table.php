@@ -38,7 +38,9 @@ class CreateProductsTable extends Migration
             $table->string('size')->nullable();  // Size (if applicable)
 
             // Image paths
-            $table->string('main_image');
+            $table->string('main_image')->nullable();
+            $table->bigInteger('creator_id')->nullable();
+            $table->string('creator_type')->nullable();
             $table->timestamps();
         });
     }
