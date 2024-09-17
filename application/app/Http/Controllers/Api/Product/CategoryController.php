@@ -48,43 +48,61 @@ class CategoryController extends Controller
         ]);
 
         // Find the category by ID
-        $category = Category::findOrFail($id);
+        $category = Category::find($id);
 
-        // Update the category
-        $category->update([
-            'name' => $request->name,
-        ]);
+        if($category){
+            // Update the category
+            $category->update([
+                'name' => $request->name,
+            ]);
 
-        // Return success response
-        return response()->json([
-            'message' => 'Category updated successfully',
-            'category' => $category,
-        ], 200);
+            // Return success response
+            return response()->json([
+                'message' => 'Category updated successfully',
+                'category' => $category,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Category not found'
+            ], 404);
+        }
     }
 
     public function showCategory($id)
     {
         // Find the category by ID
-        $category = Category::findOrFail($id);
+        $category = Category::with('sub_categories')->find($id);
 
-        // Return success response with the category data
-        return response()->json([
-            'category' => $category,
-        ], 200);
+        if($category){
+            // Return success response with the category data
+            return response()->json([
+                'category' => $category,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Category not found'
+            ], 404);
+        }
     }
 
     public function destroyCategory($id)
     {
         // Find the category by ID
-        $category = Category::findOrFail($id);
+        $category = Category::find($id);
 
-        // Delete the category
-        $category->delete();
+        if($category){
+            // Delete the category
+            $category->delete();
 
-        // Return success response
-        return response()->json([
-            'message' => 'Category deleted successfully',
-        ], 200);
+            // Return success response
+            return response()->json([
+                'message' => 'Category deleted successfully',
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Category not found'
+            ], 404);
+        }
     }
 
     public function subCategoryList()
@@ -100,7 +118,7 @@ class CategoryController extends Controller
     {
         // Validate the request data
         $request->validate([
-            'category_id' => 'required|integer',
+            'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255|unique:sub_categories,name',
         ]);
 
@@ -128,7 +146,7 @@ class CategoryController extends Controller
     {
         // Validate the request data
         $request->validate([
-            'category_id' => 'required|integer',
+            'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255|unique:sub_categories,name,' . $id,
         ]);
 
@@ -150,12 +168,12 @@ class CategoryController extends Controller
                 ], 200);
             } else {
                 return response()->json([
-                    'message' => 'Invalid sub category'
+                    'message' => 'sub category not found'
                 ], 404);
             }
         } else {
             return response()->json([
-                'message' => 'Invalid category'
+                'message' => 'category not found'
             ], 404);
         }
     }
@@ -163,26 +181,38 @@ class CategoryController extends Controller
     public function showSubCategory($id)
     {
         // Find the category by ID
-        $sub_category = SubCategory::with('category')->findOrFail($id);
+        $sub_category = SubCategory::with('category')->find($id);
 
-        // Return success response with the category data
-        return response()->json([
-            'sub_category' => $sub_category,
-        ], 200);
+        if ($sub_category){
+            // Return success response with the category data
+            return response()->json([
+                'sub_category' => $sub_category,
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'sub category not found'
+            ], 404);
+        }
     }
 
     public function destroySubCategory($id)
     {
         // Find the category by ID
-        $sub_category = SubCategory::findOrFail($id);
+        $sub_category = SubCategory::find($id);
 
-        // Delete the category
-        $sub_category->delete();
+        if($sub_category){
+            // Delete the sub category
+            $sub_category->delete();
 
-        // Return success response
-        return response()->json([
-            'message' => 'Sub Category deleted successfully',
-        ], 200);
+            // Return success response
+            return response()->json([
+                'message' => 'Sub Category deleted successfully',
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'sub category not found'
+            ], 404);
+        }
     }
 
 }

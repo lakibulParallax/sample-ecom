@@ -64,7 +64,7 @@ class BrandController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'message' => 'Invalid brand id',
+                'message' => 'brand not found',
             ], 404);
         }
     }
@@ -80,7 +80,7 @@ class BrandController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'message' => 'Invalid brand id',
+                'message' => 'brand not found',
             ], 404);
         }
 
@@ -101,7 +101,7 @@ class BrandController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'message' => 'Invalid brand id',
+                'message' => 'brand not found',
             ], 404);
         }
     }

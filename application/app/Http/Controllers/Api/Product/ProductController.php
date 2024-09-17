@@ -129,7 +129,7 @@ class ProductController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'message' => 'Invalid Product id'
+                'message' => 'Product not found'
             ], 404);
         }
     }
@@ -145,7 +145,7 @@ class ProductController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'message' => 'Invalid product id',
+                'message' => 'product not found',
             ], 404);
         }
 
@@ -166,7 +166,7 @@ class ProductController extends Controller
             ], 200);
         } else {
             return response()->json([
-                'message' => 'Invalid Product id',
+                'message' => 'Product not found',
             ], 404);
         }
     }
