@@ -120,8 +120,8 @@ class LoginController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required|email',
-            'phone' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required|unique:users,phone',
             'password' => 'required|min:6',
         ]);
 
@@ -134,7 +134,14 @@ class LoginController extends Controller
         if ($phoneExist) {
             return response()->json([
                 'status' => 422,
-                'message' => "Phone Number already exist. Please try another Phone Number."
+                'message' => "Phone Number already exists. Please try another Phone Number."
+            ], 422);
+        }
+        $emailExist = User::where('email', $request->email)->first();
+        if ($emailExist) {
+            return response()->json([
+                'status' => 422,
+                'message' => "Email already exists. Please try another Email."
             ], 422);
         }
         $temporary_token = Str::random(40);
