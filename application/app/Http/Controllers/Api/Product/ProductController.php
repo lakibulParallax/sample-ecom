@@ -38,7 +38,7 @@ class ProductController extends Controller
             'discount'         => 'nullable|numeric',
             'shipping_cost'    => 'nullable|numeric',
             'quantity'         => 'required|numeric',
-            'sku'              => 'required|string|max:255',
+            'sku'              => 'required|string|max:255|unique:products,sku',
         ]);
 
         // Create the Product
@@ -76,6 +76,8 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
+        $product = Product::find($id);
+
         // Validate the request data
         $request->validate([
             'category_id'      => 'required|exists:categories,id',
@@ -86,10 +88,9 @@ class ProductController extends Controller
             'discount'         => 'nullable|numeric',
             'shipping_cost'    => 'nullable|numeric',
             'quantity'         => 'required|numeric',
-            'sku'              => 'required|string|max:255',
+            'sku'              => 'required|string|max:255|unique:products,sku,' . $product->id,
         ]);
 
-        $product = Product::find($id);
         if($product){
             // Update the product fields
             $product->name                = $request->name;
